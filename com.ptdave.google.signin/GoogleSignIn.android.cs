@@ -77,7 +77,10 @@ namespace com.ptdave.google.signin
 
         public void Login()
         {
-            Logout();
+            if(googleSignInClient.AsGoogleApiClient().IsConnected)
+            {
+                googleSignInClient.SignOut();
+            }
             Intent signInIntent = googleSignInClient.SignInIntent;
             Activity.StartActivityForResult(signInIntent, GoogleSignInAndroid.SIGNIN_RESP);
         }

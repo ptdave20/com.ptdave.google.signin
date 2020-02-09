@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;Xamarin.iOS10;MonoAndroid90</TargetFrameworks>
-    <!--<TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.0;Xamarin.iOS10;MonoAndroid90</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;Xamarin.iOS10;MonoAndroid90</TargetFrameworks>-->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>David Marchbanks</Authors>
     <Company>David Marchbanks</Company>
