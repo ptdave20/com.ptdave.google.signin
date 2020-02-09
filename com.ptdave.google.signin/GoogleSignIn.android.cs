@@ -10,6 +10,7 @@ using System.Text;
 using Xamarin.Forms;
 
 using Android.Gms.Tasks;
+using System.Linq;
 
 [assembly: Dependency(typeof(SignInClient))]
 namespace com.ptdave.google.signin
@@ -54,6 +55,22 @@ namespace com.ptdave.google.signin
             if(string.IsNullOrEmpty(result.ServerAuthCode))
             {
                 OnAuthCodeReceived?.Invoke(this, result.ServerAuthCode);
+            } else
+            {
+                OnLogin?.Invoke(this, new Data.GoogleUser()
+                {
+                    Base = result,
+                    AuthCode = result.ServerAuthCode,
+                    Email = result.Email,
+                    FamilyName = result.FamilyName,
+                    GivenName = result.GivenName,
+                    GrantedScopes = result.GrantedScopes.Select(x => x.ScopeUri).ToArray(),
+                    RequestedScopes = result.RequestedScopes.Select(x => x.ScopeUri).ToArray(),
+                    Id = result.Id,
+                    DisplayName = result.DisplayName,
+                    IdToken = result.IdToken,
+                    PhotoUrl = result.PhotoUrl.ToString(),
+                });
             }
             
         }

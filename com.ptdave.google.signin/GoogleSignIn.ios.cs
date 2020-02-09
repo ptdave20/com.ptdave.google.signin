@@ -6,6 +6,7 @@ using Foundation;
 using Google.SignIn;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UIKit;
 using Xamarin.Forms;
@@ -36,15 +37,23 @@ namespace com.ptdave.google.signin
             if(!string.IsNullOrEmpty(authCode))
             {
                 OnAuthCodeReceived?.Invoke(this, authCode);
+            } else
+            {
+                OnLogin?.Invoke(this, new Data.GoogleUser()
+                {
+                    Id = user.UserId,
+                    DisplayName = user.Profile.Name,
+                    IdToken = user.Authentication.IdToken,
+                    Base = user,
+                    AuthCode = user.ServerAuthCode,
+                    Email = user.Profile.Email,
+                    FamilyName = user.Profile.Email,
+                    GivenName = user.Profile.GivenName,
+                    GrantedScopes = user.GrantedScopes.ToArray(),
+                    RequestedScopes = new string[] {},
+                    PhotoUrl = user.Profile.GetImageUrl(512).ToString(),
+                });
             }
-            
-            //OnLogin?.Invoke(this, new Abstract.Google.GoogleUser()
-            //{
-            //    AuthCode = idToken,
-            //    Email = user.Profile.Email,
-            //    FamilyName = user.Profile.FamilyName,
-            //    GivenName = user.Profile.GivenName
-            //});
         }
 
         public void Login()
