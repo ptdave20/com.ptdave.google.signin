@@ -6,11 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(GoogleSignInButton), typeof(GoogleSignInButtonAndroid))]
 namespace com.ptdave.google.signin
 {
+    [Preserve(AllMembers = true)]
     public class GoogleSignInButtonAndroid : ViewRenderer<GoogleSignInButton, SignInButton>
     {
         public GoogleSignInButtonAndroid(Context context) : base(context)

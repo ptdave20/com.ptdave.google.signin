@@ -11,9 +11,11 @@ using System.Text;
 using UIKit;
 using Xamarin.Forms;
 
+
 [assembly: Dependency(typeof(SignInClient))]
 namespace com.ptdave.google.signin
 {
+    [Preserve(AllMembers = true)]
     public class SignInClient : SignInDelegate , IGoogleSignIn
     {
         public event OnLoginDelegate OnLogin;
@@ -133,7 +135,8 @@ namespace com.ptdave.google.signin
         public static void Initialize(string clientId, string serverClientId = "")
         {
             var client = DependencyService.Get<IGoogleSignIn>() as SignInClient;
-            _signIn.ServerClientId = serverClientId;
+            if(!string.IsNullOrEmpty(serverClientId))
+                _signIn.ServerClientId = serverClientId;
             _signIn.ClientId = clientId;
             _signIn.Delegate = client;
         }

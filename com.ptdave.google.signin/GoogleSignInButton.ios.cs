@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Text;
 using UIKit;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly: ExportRenderer(typeof(GoogleSignInButton), typeof(GoogleSignInButtonIOS))]
 namespace com.ptdave.google.signin
 {
+    [Preserve(AllMembers = true)]
     public class GoogleSignInButtonIOS : ViewRenderer<GoogleSignInButton, SignInButton>
     {
         SignInButton button;

@@ -11,10 +11,12 @@ using Xamarin.Forms;
 
 using Android.Gms.Tasks;
 using System.Linq;
+using Xamarin.Forms.Internals;
 
 [assembly: Dependency(typeof(SignInClient))]
 namespace com.ptdave.google.signin
 {
+    [Preserve(AllMembers = true)]
     public class SignInClient : IGoogleSignIn
     {
         public event OnLoginDelegate OnLogin;
