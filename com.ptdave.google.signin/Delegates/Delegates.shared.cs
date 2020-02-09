@@ -9,4 +9,5 @@ namespace com.ptdave.google.signin.Delegates
     public delegate void OnErrorDelegate(object sender, Error error);
     public delegate void OnLogoutDelegate(object sender);
     public delegate void OnAuthCodeReceivedDelegate(object sender, string code);
+    public delegate void OnRevokedDelegate(object sender, GoogleUser googleUser);
 }

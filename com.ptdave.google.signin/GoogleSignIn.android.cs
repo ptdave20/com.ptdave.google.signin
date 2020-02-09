@@ -21,7 +21,7 @@ namespace com.ptdave.google.signin
         public event OnErrorDelegate OnError;
         public event OnLogoutDelegate OnLogout;
         public event OnAuthCodeReceivedDelegate OnAuthCodeReceived;
-
+        public event OnRevokedDelegate OnRevoked;
 
         GoogleSignInClient googleSignInClient;
         GoogleSignInOptions googleSignInOptions;
@@ -89,6 +89,17 @@ namespace com.ptdave.google.signin
 
         public void SilentLogin()
         {
+            googleSignInClient.SilentSignIn().AddOnCompleteListener(Activity, new CompleteHandler(a => HandleSignIn(a)));
+        }
+
+        public void Revoke()
+        {
+            googleSignInClient.RevokeAccess().AddOnCompleteListener(Activity, new CompleteHandler(a => OnRevoked?.Invoke(this,null)));
+        }
+
+        public bool HasPreviousSignIn()
+        {
+            return GoogleSignIn.GetLastSignedInAccount(Activity) != null;
         }
 
         private class CompleteHandler : Java.Lang.Object, IOnCompleteListener

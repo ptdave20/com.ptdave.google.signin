@@ -14,12 +14,45 @@ using Xamarin.Forms;
 [assembly: Dependency(typeof(SignInClient))]
 namespace com.ptdave.google.signin
 {
-    public class SignInClient : SignInDelegate, IGoogleSignIn
+    public class SignInClient : SignInDelegate , IGoogleSignIn
     {
         public event OnLoginDelegate OnLogin;
         public event OnErrorDelegate OnError;
         public event OnLogoutDelegate OnLogout;
         public event OnAuthCodeReceivedDelegate OnAuthCodeReceived;
+        public event OnRevokedDelegate OnRevoked;
+
+        public SignInClient()
+        {
+            SignIn.SharedInstance.Disconnected += SharedInstance_Disconnected;
+        }
+
+        private void SharedInstance_Disconnected(object sender, SignInDelegateEventArgs e)
+        {
+            if(e.Error != null)
+            {
+                OnError?.Invoke(this, new Error()
+                {
+                    Message = e.Error.LocalizedDescription
+                });
+            } else
+            {
+                OnRevoked?.Invoke(this, new Data.GoogleUser()
+                {
+                    Base = e.User,
+                    Id= e.User?.UserId,
+                    AuthCode = "",
+                    DisplayName = e.User?.Profile?.Name,
+                    Email = e.User?.Profile?.Email,
+                    FamilyName = e.User?.Profile?.FamilyName,
+                    GivenName = e.User?.Profile?.GivenName,
+                    GrantedScopes = new string[] { },
+                    IdToken = e.User?.Authentication?.IdToken,
+                    PhotoUrl = "",
+                    RequestedScopes = new string[] { }
+                });
+            }
+        }
 
         public override void DidSignIn(SignIn signIn, Google.SignIn.GoogleUser user, NSError error)
         {
@@ -58,13 +91,17 @@ namespace com.ptdave.google.signin
 
         public void Login()
         {
-            Logout();
+            SignIn.SharedInstance.PresentingViewController = GetPresenter();
+            SignIn.SharedInstance.SignInUser();
+        }
+
+        private UIViewController GetPresenter()
+        {
             var window = UIApplication.SharedApplication.KeyWindow;
             var presenter = window.RootViewController;
             while (presenter.PresentedViewController != null)
                 presenter = presenter.PresentedViewController;
-            SignIn.SharedInstance.PresentingViewController = presenter;
-            SignIn.SharedInstance.SignInUser();
+            return presenter;
         }
 
         public void Logout()
@@ -72,9 +109,20 @@ namespace com.ptdave.google.signin
             SignIn.SharedInstance.SignOutUser();
         }
 
+        public void Revoke()
+        {
+            SignIn.SharedInstance.DisconnectUser();
+        }
+
         public void SilentLogin()
         {
-            
+            if(SignIn.SharedInstance.HasPreviousSignIn)
+                SignIn.SharedInstance.RestorePreviousSignIn();
+        }
+
+        public bool HasPreviousSignIn()
+        {
+            return SignIn.SharedInstance.HasPreviousSignIn;
         }
     }
 
@@ -88,7 +136,6 @@ namespace com.ptdave.google.signin
             _signIn.ServerClientId = serverClientId;
             _signIn.ClientId = clientId;
             _signIn.Delegate = client;
-
         }
 
 

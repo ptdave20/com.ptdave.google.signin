@@ -10,10 +10,15 @@ namespace com.ptdave.google.signin.Abstract
         void Login();
         void SilentLogin();
         void Logout();
+        void Revoke();
+
+        bool HasPreviousSignIn();
+        
 
         event OnLoginDelegate OnLogin;
         event OnErrorDelegate OnError;
         event OnLogoutDelegate OnLogout;
         event OnAuthCodeReceivedDelegate OnAuthCodeReceived;
+        event OnRevokedDelegate OnRevoked;
     }
 }
