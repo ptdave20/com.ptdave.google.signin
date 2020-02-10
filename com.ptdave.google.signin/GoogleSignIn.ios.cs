@@ -128,7 +128,7 @@ namespace com.ptdave.google.signin
         }
     }
 
-    class GoogleSignInIOS
+    public class GoogleSignInIOS
     {
         static SignIn _signIn = SignIn.SharedInstance;
 

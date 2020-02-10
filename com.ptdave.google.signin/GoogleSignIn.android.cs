@@ -12,6 +12,7 @@ using Xamarin.Forms;
 using Android.Gms.Tasks;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using Android.Gms.Common.Apis;
 
 [assembly: Dependency(typeof(SignInClient))]
 namespace com.ptdave.google.signin
@@ -39,9 +40,13 @@ namespace com.ptdave.google.signin
 
             var builder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DefaultSignIn)
                 .RequestEmail();
+            
             if(!string.IsNullOrEmpty(serverClientId))
             {
-                builder.RequestServerAuthCode(serverClientId);
+               builder = builder.RequestServerAuthCode(serverClientId);
+            } else
+            {
+
             }
             googleSignInOptions = builder.Build();
 
@@ -52,37 +57,47 @@ namespace com.ptdave.google.signin
 
         public void HandleSignIn(Android.Gms.Tasks.Task task)
         {
-            var result = task.Result as GoogleSignInAccount;
-            
-            if(string.IsNullOrEmpty(result.ServerAuthCode))
+            try
             {
-                OnAuthCodeReceived?.Invoke(this, result.ServerAuthCode);
-            } else
-            {
-                OnLogin?.Invoke(this, new Data.GoogleUser()
+                var result = task.Result as GoogleSignInAccount;
+
+                if (string.IsNullOrEmpty(result.ServerAuthCode))
                 {
-                    Base = result,
-                    AuthCode = result.ServerAuthCode,
-                    Email = result.Email,
-                    FamilyName = result.FamilyName,
-                    GivenName = result.GivenName,
-                    GrantedScopes = result.GrantedScopes.Select(x => x.ScopeUri).ToArray(),
-                    RequestedScopes = result.RequestedScopes.Select(x => x.ScopeUri).ToArray(),
-                    Id = result.Id,
-                    DisplayName = result.DisplayName,
-                    IdToken = result.IdToken,
-                    PhotoUrl = result.PhotoUrl.ToString(),
+                    OnAuthCodeReceived?.Invoke(this, result.ServerAuthCode);
+                }
+                else
+                {
+                    OnLogin?.Invoke(this, new Data.GoogleUser()
+                    {
+                        Base = result,
+                        AuthCode = result.ServerAuthCode,
+                        Email = result.Email,
+                        FamilyName = result.FamilyName,
+                        GivenName = result.GivenName,
+                        GrantedScopes = result.GrantedScopes.Select(x => x.ScopeUri).ToArray(),
+                        RequestedScopes = result.RequestedScopes.Select(x => x.ScopeUri).ToArray(),
+                        Id = result.Id,
+                        DisplayName = result.DisplayName,
+                        IdToken = result.IdToken,
+                        PhotoUrl = result.PhotoUrl.ToString(),
+                    });
+                }
+            }
+            catch(ApiException ex)
+            {
+                OnError?.Invoke(this, new Data.Error()
+                {
+                    Message = ex.Message,
                 });
             }
+            
             
         }
 
         public void Login()
         {
-            if(googleSignInClient.AsGoogleApiClient().IsConnected)
-            {
-                googleSignInClient.SignOut();
-            }
+            if (HasPreviousSignIn())
+                Logout();
             Intent signInIntent = googleSignInClient.SignInIntent;
             Activity.StartActivityForResult(signInIntent, GoogleSignInAndroid.SIGNIN_RESP);
         }
