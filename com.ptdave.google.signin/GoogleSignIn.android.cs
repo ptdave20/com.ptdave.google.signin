@@ -35,19 +35,20 @@ namespace com.ptdave.google.signin
 
         }
 
-        public void Initialize(Activity activity, string serverClientId)
+        public void Initialize(Activity activity, string serverClientId, bool requestProfile, bool requestEmail)
         {
 
-            var builder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DefaultSignIn)
-                .RequestEmail();
-            
+            var builder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DefaultSignIn);
+            if (requestProfile)
+                builder = builder.RequestProfile();
+            if (requestEmail)
+                builder = builder.RequestEmail();
+
             if(!string.IsNullOrEmpty(serverClientId))
             {
                builder = builder.RequestServerAuthCode(serverClientId);
-            } else
-            {
+            } 
 
-            }
             googleSignInOptions = builder.Build();
 
 
@@ -61,7 +62,7 @@ namespace com.ptdave.google.signin
             {
                 var result = task.Result as GoogleSignInAccount;
 
-                if (string.IsNullOrEmpty(result.ServerAuthCode))
+                if (!string.IsNullOrEmpty(result.ServerAuthCode))
                 {
                     OnAuthCodeReceived?.Invoke(this, result.ServerAuthCode);
                 }
@@ -143,10 +144,10 @@ namespace com.ptdave.google.signin
 
         private static SignInClient _client;
 
-        public static void Initialize(Activity activity, string serverClientId = "")
+        public static void Initialize(Activity activity, string serverClientId = "", bool requestProfile = true, bool requestEmail = true)
         {
             _client = DependencyService.Get<IGoogleSignIn>() as SignInClient;
-            _client.Initialize(activity, serverClientId);
+            _client.Initialize(activity, serverClientId, requestProfile, requestEmail);
         }
 
         public static void ActivityResult(int requestCode, Result resultCode, Intent data)

@@ -132,12 +132,13 @@ namespace com.ptdave.google.signin
     {
         static SignIn _signIn = SignIn.SharedInstance;
 
-        public static void Initialize(string clientId, string serverClientId = "")
+        public static void Initialize(string clientId, string serverClientId = "", bool requestProfile = true)
         {
             var client = DependencyService.Get<IGoogleSignIn>() as SignInClient;
             if(!string.IsNullOrEmpty(serverClientId))
                 _signIn.ServerClientId = serverClientId;
             _signIn.ClientId = clientId;
+            _signIn.ShouldFetchBasicProfile = requestProfile;
             _signIn.Delegate = client;
         }
 
